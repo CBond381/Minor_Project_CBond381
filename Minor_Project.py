@@ -52,12 +52,35 @@ st.pyplot(fig)
 
 st.header("Live Loads")
 
+st.subheader("Moment and Shear when truck at:")
+
+x_loc = st.slider('Truck Location', label_visibility='hidden')
+st.write("Truck front axle is at",x_loc,"m from left edge.")            
+                
 
 axle_spacings_1 = [3.6,1.2,6.6,6.6]
 axle_loads_1 = [50,140,140,175,120]
 CHBDC_ON_Truck = cba.Vehicle(axle_spacings=axle_spacings_1, axle_weights=axle_loads_1)
 
 bridge_model_LL = cba.BridgeAnalysis(ba=beam_model, veh=CHBDC_ON_Truck)
+
+static_LL_results = bridge_model_LL.static_vehicle(pos=x_loc,plotflag=True)
+x_value_LL1 = static_LL_results.results.x
+M_value_LL1 = static_LL_results.results.M
+V_value_LL1 = static_LL_results.results.V
+
+fig_LL1_M, ax5 = plt.subplots()
+ax5.plot(x_value_LL1,M_value_LL1)
+ax5.set_title("Live Load Moment for Truck at x.")
+st.pyplot(fig_LL1_M)
+
+fig_LL1_V, ax6 = plt.subplots()
+ax6.plot(x_value_LL1,V_value_LL1)
+ax6.set_title('Live Load Shear for Truck at x.')
+st.pyplot(fig_LL1_V)
+
+
+st.subheader("CL-625-ONT Truck Envelopes")
 
 envelopes = bridge_model_LL.run_vehicle(step=0.5, plot_env=True)
 
@@ -72,13 +95,13 @@ x_values_LL = envelopes.x
 
 fig_LL_M, ax3 = plt.subplots()
 ax3.plot(x_values_LL,M_Max,x_values_LL,M_Min)
-ax3.set_title('Live Load Moment')
+ax3.set_title('Live Load Moment Envelope')
 st.pyplot(fig_LL_M)
 
 
 fig_LL_V, ax4 = plt.subplots()
 ax4.plot(x_values_LL,V_Max,x_values_LL,V_Min)
-ax3.set_title('Live Load Shear')
+ax3.set_title('Live Load Shear Envelope')
 st.pyplot(fig_LL_V)
 
 
